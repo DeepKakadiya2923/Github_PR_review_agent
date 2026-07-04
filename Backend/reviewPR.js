@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Octokit } from "@octokit/rest";
-import { GoogleGenAI } from "@google/genai";
+import { bugAgent } from "./agents/bugAgent.js";
 
 dotenv.config();
 
@@ -8,48 +8,49 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
 });
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-});
-
 async function reviewPR() {
-    const files = await octokit.pulls.listFiles({
-        owner: "expressjs",
-        repo: "express",
-        pull_number: 7353,
-    });
+    // Fetch changed files from PR
+    // const files = await octokit.pulls.listFiles({
+    //     owner: "expressjs",
+    //     repo: "express",
+    //     pull_number: 7353,
+    // });
 
-    let diffText = "";
-    for (const file of files.data) {
-        diffText += `File: ${file.filename} ${file.patch || "No patch available"}`;
+    // Build diff text for AI review
+    // let diffText = "";
+
+    // for (const file of files.data) {
+    //     diffText += `
+    //         File: ${file.filename}
+
+    //         ${file.patch || "No patch available"}
+
+    //         --------------------------------
+    //         `;
+    // }
+
+    // console.log("\n===== PR DIFF =====\n");
+    // console.log(diffText);
+    let diffText = `
+    File: auth.js
+
+    - const user = await getUser(id);
+    - return user.name;
+
+    + const user = await getUser(id);
+    + return user.profile.name;
+    `;
+
+    try {
+        // Send diff to Bug Agent
+        const bugReview = await bugAgent(diffText);
+
+        console.log("\n===== BUG REVIEW =====\n");
+        console.log(bugReview);
+    } catch (error) {
+        console.error("Bug Agent Failed:");
+        console.error(error.message);
     }
-
-    console.log("Patch:");
-    console.log(diffText);
-
-    const prompt = `
-        You are a senior software engineer.
-
-        Review the following pull request.
-
-        ${diffText}
-
-        Find:
-        1. Bugs
-        2. Security Issues
-        3. Performance Issues
-        4. Code Quality Issues
-
-        Return structured feedback.
-        `;
-
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-    });
-
-    console.log("\nAI Review:\n");
-    console.log(response.text);
 }
 
 reviewPR();
