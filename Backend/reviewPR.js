@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { Octokit } from "@octokit/rest";
 import { bugAgent } from "./agents/bugAgent.js";
 import { styleAgent } from "./agents/styleAgent.js";
+import { testAgent } from "./agents/testAgent.js";
 
 dotenv.config();
 
@@ -41,11 +42,17 @@ async function reviewPR() {
         // Send diff to Style Agent
         const styleReview = await styleAgent(diffText);
 
+        // Send diff to Test Agent
+        const testReview = await testAgent(diffText);
+
         console.log("\n===== BUG REVIEW =====\n");
         console.log(bugReview);
 
         console.log("\n===== STYLE REVIEW =====\n");
         console.log(styleReview);
+
+        console.log("\n===== TEST REVIEW =====\n");
+        console.log(testReview);
     } catch (error) {
         console.error("Bug Agent Failed:");
         console.error(error.message);
