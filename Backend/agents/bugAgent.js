@@ -19,13 +19,29 @@ export async function bugAgent(diffText) {
         - Runtime errors
         - Edge cases
 
-        Do NOT comment on:
+                Do NOT comment on:
         - Code style
         - Formatting
         - Documentation
         - Naming conventions
         - Performance
         - Security
+        - Hypothetical compatibility issues
+        - Dependency upgrade risks without evidence
+        - Possible future problems
+        - Speculation about external libraries
+
+        Only report bugs that are directly supported by the code diff.
+
+        Do not speculate.
+
+        Do not invent potential issues.
+
+        If the diff does not contain enough evidence of a bug,
+        return an empty bugs array.
+
+        A dependency version change alone is NOT a bug unless
+        the diff shows code that will break because of that change.
 
         Return ONLY valid JSON in the following format:
 

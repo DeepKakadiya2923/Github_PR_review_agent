@@ -26,6 +26,18 @@ export async function styleAgent(diffText) {
         - Security
         - Performance
 
+        Only comment on code that was changed in the diff.
+
+        Do not review unrelated parts of the project.
+
+        Do not suggest project-wide refactoring.
+
+        Do not comment on dependency versioning strategies
+        unless the change directly introduces a maintainability issue.
+
+        If no style issues are present in the changed lines,
+        return an empty styleIssues array.
+
         Return ONLY valid JSON in the following format:
 
         {

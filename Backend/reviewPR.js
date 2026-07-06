@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { bugAgent } from "./agents/bugAgent.js";
 import { styleAgent } from "./agents/styleAgent.js";
 import { testAgent } from "./agents/testAgent.js";
+import { reviewSynthesizer } from "./agents/reviewSynthesizer.js";
 
 dotenv.config();
 
@@ -36,23 +37,22 @@ async function reviewPR() {
     
 
     try {
-        // Send diff to Bug Agent
-        const bugReview = await bugAgent(diffText);
+        const bugReviewRaw = await bugAgent(diffText);
+        const styleReviewRaw = await styleAgent(diffText);
+        const testReviewRaw = await testAgent(diffText);
+        
+        const bugReview = JSON.parse(bugReviewRaw);
+        const styleReview = JSON.parse(styleReviewRaw);
+        const testReview = JSON.parse(testReviewRaw);
 
-        // Send diff to Style Agent
-        const styleReview = await styleAgent(diffText);
+        const finalReview = reviewSynthesizer(
+            bugReview,
+            styleReview,
+            testReview
+        );
 
-        // Send diff to Test Agent
-        const testReview = await testAgent(diffText);
-
-        console.log("\n===== BUG REVIEW =====\n");
-        console.log(bugReview);
-
-        console.log("\n===== STYLE REVIEW =====\n");
-        console.log(styleReview);
-
-        console.log("\n===== TEST REVIEW =====\n");
-        console.log(testReview);
+        console.log("\n===== FINAL REVIEW =====\n");
+        console.log(JSON.stringify(finalReview, null, 2));
     } catch (error) {
         console.error("Bug Agent Failed:");
         console.error(error.message);
