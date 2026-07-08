@@ -1,8 +1,9 @@
+import "./App.css";
 import PRForm from "./components/PRForm";
 
 function App() {
   return (
-    <div>
+    <div className="container">
       <h1>GitHub PR Review Agent</h1>
 
       <PRForm />
