@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 
+import { postComment } from "./commentService.js";
 import { parsePRUrl } from "./utils/parsePRUrl.js";
 import { reviewPR } from "./reviewPRService.js";
 
@@ -37,6 +38,37 @@ app.post("/review", async (req, res) => {
         error: error.message,
     });
 }
+});
+
+app.post("/comment", async (req, res) => {
+  try {
+    const { prUrl, comment } = req.body;
+
+    const {
+      owner,
+      repo,
+      pullNumber,
+    } = parsePRUrl(prUrl);
+
+    const commentUrl = await postComment(
+      owner,
+      repo,
+      pullNumber,
+      comment
+    );
+
+    res.json({
+      success: true,
+      commentUrl,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 });
 
 app.listen(5000, () => {

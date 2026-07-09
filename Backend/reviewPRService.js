@@ -53,33 +53,27 @@ export async function reviewPR(owner, repo, pullNumber) {
         `;
     }
 
-  // const bugReviewRaw = await bugAgent(diffText);
-  // const styleReviewRaw = await styleAgent(diffText);
-  // const testReviewRaw = await testAgent(diffText);
+  const bugReviewRaw = await bugAgent(diffText);
+  const styleReviewRaw = await styleAgent(diffText);
+  const testReviewRaw = await testAgent(diffText);
 
-  // console.log("BUG RAW:", bugReviewRaw);
-  // console.log("STYLE RAW:", styleReviewRaw);
-  // console.log("TEST RAW:", testReviewRaw);
+  console.log("BUG RAW:", bugReviewRaw);
+  console.log("STYLE RAW:", styleReviewRaw);
+  console.log("TEST RAW:", testReviewRaw);
 
-  // const bugReview = JSON.parse(cleanJsonResponse(bugReviewRaw));
-  // const styleReview = JSON.parse(cleanJsonResponse(styleReviewRaw));
-  // const testReview = JSON.parse(cleanJsonResponse(testReviewRaw));
+  const bugReview = JSON.parse(cleanJsonResponse(bugReviewRaw));
+  const styleReview = JSON.parse(cleanJsonResponse(styleReviewRaw));
+  const testReview = JSON.parse(cleanJsonResponse(testReviewRaw));
 
-  // const review = reviewSynthesizer(
-  //   bugReview,
-  //   styleReview,
-  //   testReview
-  // );
+  const review = reviewSynthesizer(
+    bugReview,
+    styleReview,
+    testReview
+  );
 
-  // return {
-  //   metadata,
-  //   ...review,
-  // };
   return {
-  metadata,
-  summary: "Test Summary",
-  bugs: [],
-  styleIssues: [],
-  testSuggestions: [],
-};
+    metadata,
+    ...review,
+  };
+  
 }
