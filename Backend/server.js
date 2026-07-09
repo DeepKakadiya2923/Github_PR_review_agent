@@ -28,10 +28,15 @@ app.post("/review", async (req, res) => {
     res.json(review);
 
   } catch (error) {
+    console.error(error);
+
+    if(error.message.includes("429") || error.message.includes("RESOURCE_EXHAUSTED")) {
+        return res.status(429).json({ error: "Gemini API quota exceeded. Please try again later.", });
+    }
     res.status(500).json({
-      error: error.message,
+        error: error.message,
     });
-  }
+}
 });
 
 app.listen(5000, () => {

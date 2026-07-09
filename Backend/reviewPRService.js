@@ -12,7 +12,29 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
+function cleanJsonResponse(text) {
+    return text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+}
+
 export async function reviewPR(owner, repo, pullNumber) {
+  const pr = await octokit.pulls.get({
+    owner,
+    repo,
+    pull_number: pullNumber,
+  });
+
+  const metadata = {
+    repository: repo,
+    title: pr.data.title,
+    author: pr.data.user.login,
+    filesChanged: pr.data.changed_files,
+    additions: pr.data.additions,
+    deletions: pr.data.deletions,
+  };
+
   const files = await octokit.pulls.listFiles({
     owner,
     repo,
@@ -31,20 +53,33 @@ export async function reviewPR(owner, repo, pullNumber) {
         `;
     }
 
-  const bugReviewRaw = await bugAgent(diffText);
-  const styleReviewRaw = await styleAgent(diffText);
-  const testReviewRaw = await testAgent(diffText);
+  // const bugReviewRaw = await bugAgent(diffText);
+  // const styleReviewRaw = await styleAgent(diffText);
+  // const testReviewRaw = await testAgent(diffText);
 
-  console.log("BUG RAW:", bugReviewRaw);
-  console.log("STYLE RAW:", styleReviewRaw);
-  console.log("TEST RAW:", testReviewRaw);
-  const bugReview = JSON.parse(bugReviewRaw);
-  const styleReview = JSON.parse(styleReviewRaw);
-  const testReview = JSON.parse(testReviewRaw);
+  // console.log("BUG RAW:", bugReviewRaw);
+  // console.log("STYLE RAW:", styleReviewRaw);
+  // console.log("TEST RAW:", testReviewRaw);
 
-  return reviewSynthesizer(
-    bugReview,
-    styleReview,
-    testReview
-  );
+  // const bugReview = JSON.parse(cleanJsonResponse(bugReviewRaw));
+  // const styleReview = JSON.parse(cleanJsonResponse(styleReviewRaw));
+  // const testReview = JSON.parse(cleanJsonResponse(testReviewRaw));
+
+  // const review = reviewSynthesizer(
+  //   bugReview,
+  //   styleReview,
+  //   testReview
+  // );
+
+  // return {
+  //   metadata,
+  //   ...review,
+  // };
+  return {
+  metadata,
+  summary: "Test Summary",
+  bugs: [],
+  styleIssues: [],
+  testSuggestions: [],
+};
 }

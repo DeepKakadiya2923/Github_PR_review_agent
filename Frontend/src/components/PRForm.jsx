@@ -57,6 +57,41 @@ function PRForm() {
       {review &&
       (
         <div>
+          {review?.metadata && (
+          <div className="section-card">
+            <h2>PR Information</h2>
+
+              <p>
+                <strong>Repository:</strong>{" "}
+                {review.metadata.repository}
+              </p>
+
+              <p>
+                <strong>Title:</strong>{" "}
+                {review.metadata.title}
+              </p>
+
+              <p>
+                <strong>Author:</strong>{" "}
+                {review.metadata.author}
+              </p>
+
+              <p>
+                <strong>Files Changed:</strong>{" "}
+                {review.metadata.filesChanged}
+              </p>
+
+              <p>
+                <strong>Additions:</strong>{" "}
+                {review.metadata.additions}
+              </p>
+
+              <p>
+                <strong>Deletions:</strong>{" "}
+                {review.metadata.deletions}
+              </p>
+            </div>
+          )}
           <div className="section-card">
             <h2>Summary</h2>
             <p>{review.summary}</p>
