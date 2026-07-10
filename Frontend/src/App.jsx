@@ -1,13 +1,27 @@
-import "./App.css";
-import PRForm from "./components/PRForm";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import Dashboard from "./pages/Dashboard";
+import Review from "./pages/Review";
 
 function App() {
   return (
-    <div className="container">
-      <h1>GitHub PR Review Agent</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={<Dashboard />}
+        />
 
-      <PRForm />
-    </div>
+        <Route
+          path="/review"
+          element={<Review />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

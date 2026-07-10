@@ -6,6 +6,7 @@ function PRForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [posting, setPosting] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const handleReview = async () => {
     try {
@@ -97,7 +98,7 @@ function PRForm() {
         throw new Error(data.error);
       }
 
-      alert("Review posted successfully!");
+      setSuccess("Review posted to GitHub successfully!");
 
     } catch (error) {
       alert(error.message);
@@ -106,53 +107,73 @@ function PRForm() {
     }
   };
 
-  // console.log(review.testSuggestions);
-  if (review) {
-  console.log("Review Data:", review);
-
-  console.log("First Bug:", review.bugs?.[0]);
-
-  console.log(
-    "First Style Issue:",
-    review.styleIssues?.[0]
-  );
-
-  console.log(
-    "First Test Suggestion:",
-    review.testSuggestions?.[0]
-  );
-}
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Paste GitHub PR URL"
-        value={prUrl}
-        onChange={(e) => setPrUrl(e.target.value)}
-      />
+    <div className="max-w-6xl mx-auto">
+        <p className="subtitle">
+          AI-powered code review using Gemini
+        </p>
 
-      <button onClick={handleReview} disabled={loading}>
-        {loading ? "Reviewing..." : "Review PR"}
-      </button>
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <h2 className="text-2xl font-bold mb-2">
+          Analyze Pull Request
+        </h2>
+
+        <p className="text-gray-600 mb-4">
+          AI-powered code review using Gemini
+        </p>
+
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Paste GitHub PR URL"
+            value={prUrl}
+            onChange={(e) => setPrUrl(e.target.value)}
+            className="flex-1 border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <button
+            onClick={handleReview}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+          >
+            {loading ? "Reviewing..." : "Review PR"}
+          </button>
+        </div>
+      </div>
 
       {review && (
-        <button
-          onClick={handlePostReview}
-          disabled={posting}
-        >
-          {posting
-            ? "Posting..."
-            : "Post Review to GitHub"}
-        </button>
+        <div className="button-section">
+          <div className="mb-6">
+            <button
+              onClick={handlePostReview}
+              disabled={posting}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              {posting
+                ? "Posting..."
+                : "Post Review to GitHub"}
+            </button>
+          </div>
+        </div>  
       )}
 
-      {error && (<p>{error}</p>)}
+      {loading && (
+        <p className="text-blue-600 font-semibold mb-4 animate-pulse">Analyzing Pull Request...</p>
+      ) }
+
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+        {error && <p>{error}</p>}
+      </div>
+
+      <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+        {success && <p>{success}</p>}
+      </div>
     
       {review &&
       (
         <div>
           {review?.metadata && (
-          <div className="section-card">
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <h2>PR Information</h2>
 
               <p>
@@ -186,13 +207,13 @@ function PRForm() {
               </p>
             </div>
           )}
-          <div className="section-card">
+          <div className="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-6 mb-6 shadow">
             <h2>Summary</h2>
             <p>{review.summary}</p>
           </div>
 
-          <div className="section-card">
-            <h2>Bugs</h2>
+          <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-6 shadow">
+            <h2>Bugs ({review.bugs.length})</h2>
 
             {review.bugs.length === 0 ? 
                 (<p>No bugs found.</p>): 
@@ -207,8 +228,8 @@ function PRForm() {
             }
           </div>
 
-          <div className="section-card">
-            <h2>Style Issues</h2>
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-xl p-6 mb-6 shadow">
+            <h2>Style Issues ({review.styleIssues.length})</h2>
 
             {review.styleIssues.length === 0 ? 
                 (<p>No style issues found.</p>): 
@@ -223,8 +244,8 @@ function PRForm() {
             }
           </div>
 
-          <div className="section-card">
-            <h2>Test Suggestions</h2>
+          <div className="bg-green-50 border-l-4 border-green-500 rounded-xl p-6 mb-6 shadow">
+            <h2>Test Suggestions ({review.testSuggestions.length})</h2>
 
             {review.testSuggestions.length === 0 ? (
               <p>No test suggestions.</p>
@@ -243,7 +264,12 @@ function PRForm() {
         
         </div>
         )
-    }
+      }
+
+      <footer className="text-center text-gray-500 mt-10 mb-4">
+          Built with React, Node.js, Gemini AI and GitHub API
+      </footer>
+
     </div>
   );
 }
