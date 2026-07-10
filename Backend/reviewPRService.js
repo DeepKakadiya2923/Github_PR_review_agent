@@ -4,6 +4,7 @@ import { Octokit } from "@octokit/rest";
 import { bugAgent } from "./agents/bugAgent.js";
 import { styleAgent } from "./agents/styleAgent.js";
 import { testAgent } from "./agents/testAgent.js";
+import { documentationAgent } from "./agents/documentationAgent.js";
 import { reviewSynthesizer } from "./agents/reviewSynthesizer.js";
 
 dotenv.config();
@@ -12,11 +13,17 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-function cleanJsonResponse(text) {
-    return text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
+function cleanJsonResponse(data) {
+  if (typeof data === "object") {
+    return data;
+  }
+
+  return JSON.parse(
+    data
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim()
+  );
 }
 
 export async function reviewPR(owner, repo, pullNumber) {
@@ -52,23 +59,27 @@ export async function reviewPR(owner, repo, pullNumber) {
         --------------------------------
         `;
     }
+    if (diffText.length > 12000) {
+      diffText = diffText.slice(0, 12000);
+    } 
 
-  const bugReviewRaw = await bugAgent(diffText);
-  const styleReviewRaw = await styleAgent(diffText);
-  const testReviewRaw = await testAgent(diffText);
+  const [bugReviewRaw,styleReviewRaw,testReviewRaw,documentationReviewRaw,] = await Promise.all([bugAgent(diffText),styleAgent(diffText),testAgent(diffText),documentationAgent(diffText),]);
 
   console.log("BUG RAW:", bugReviewRaw);
   console.log("STYLE RAW:", styleReviewRaw);
   console.log("TEST RAW:", testReviewRaw);
+  console.log("DOCUMENTATION RAW:", documentationReviewRaw);
 
-  const bugReview = JSON.parse(cleanJsonResponse(bugReviewRaw));
-  const styleReview = JSON.parse(cleanJsonResponse(styleReviewRaw));
-  const testReview = JSON.parse(cleanJsonResponse(testReviewRaw));
+  const bugReview = cleanJsonResponse(bugReviewRaw);
+  const styleReview = cleanJsonResponse(styleReviewRaw);
+  const testReview = cleanJsonResponse(testReviewRaw);
+  const documentationReview = cleanJsonResponse(documentationReviewRaw);
 
   const review = reviewSynthesizer(
     bugReview,
     styleReview,
-    testReview
+    testReview,
+    documentationReview
   );
 
   return {

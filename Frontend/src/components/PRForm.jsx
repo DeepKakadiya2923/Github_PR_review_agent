@@ -76,6 +76,18 @@ function PRForm() {
                   )
                   .join("\n")
           }
+
+          ### Documentation Issues
+          ${
+            review.documentationIssues.length === 0
+              ? "No documentation issues found."
+              : review.documentationIssues
+                  .map(
+                    (d) =>
+                      `- ${d.title}: ${d.description}`
+                  )
+                  .join("\n")
+          }
           `;
 
     const response = await fetch(
@@ -259,6 +271,38 @@ function PRForm() {
                   </p>
                 </div>
               ))
+            )}
+          </div>
+
+          <div className="bg-purple-50 border-l-4 border-purple-500 rounded-xl p-6 mb-6 shadow">
+            <h2>
+              Documentation Issues (
+              {review.documentationIssues?.length || 0}
+              )
+            </h2>
+
+            {review.documentationIssues?.length === 0 ? (
+              <p>No documentation issues found.</p>
+            ) : (
+              review.documentationIssues.map(
+                (doc, index) => (
+                  <div
+                    key={index}
+                    className="mb-4"
+                  >
+                    <h4 className="font-bold">
+                      {doc.title}
+                    </h4>
+
+                    <p>{doc.description}</p>
+
+                    <p>
+                      <strong>Priority:</strong>{" "}
+                      {doc.priority}
+                    </p>
+                  </div>
+                )
+              )
             )}
           </div>
         
