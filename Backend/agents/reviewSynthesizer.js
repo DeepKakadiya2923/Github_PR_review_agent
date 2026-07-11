@@ -2,7 +2,8 @@ export function reviewSynthesizer(
     bugReview,
     styleReview,
     testReview,
-    documentationReview
+    documentationReview,
+    securityReview
 ) {
     return {
         summary: "Automated PR Review Generated",
@@ -14,5 +15,7 @@ export function reviewSynthesizer(
         testSuggestions: testReview.testSuggestions || [],
 
         documentationIssues:documentationReview.documentationIssues || [],
+
+        securityIssues: securityReview.securityIssues || [],
     };
 }

@@ -5,6 +5,7 @@ import { bugAgent } from "./agents/bugAgent.js";
 import { styleAgent } from "./agents/styleAgent.js";
 import { testAgent } from "./agents/testAgent.js";
 import { documentationAgent } from "./agents/documentationAgent.js";
+import { securityAgent }from "./agents/securityAgent.js";
 import { reviewSynthesizer } from "./agents/reviewSynthesizer.js";
 
 dotenv.config();
@@ -63,23 +64,26 @@ export async function reviewPR(owner, repo, pullNumber) {
       diffText = diffText.slice(0, 12000);
     } 
 
-  const [bugReviewRaw,styleReviewRaw,testReviewRaw,documentationReviewRaw,] = await Promise.all([bugAgent(diffText),styleAgent(diffText),testAgent(diffText),documentationAgent(diffText),]);
+  const [bugReviewRaw,styleReviewRaw,testReviewRaw,documentationReviewRaw,securityReviewRaw] = await Promise.all([bugAgent(diffText),styleAgent(diffText),testAgent(diffText),documentationAgent(diffText),securityAgent(diffText)]);
 
   console.log("BUG RAW:", bugReviewRaw);
   console.log("STYLE RAW:", styleReviewRaw);
   console.log("TEST RAW:", testReviewRaw);
   console.log("DOCUMENTATION RAW:", documentationReviewRaw);
+  console.log("SECURITY RAW:", securityReviewRaw);
 
   const bugReview = cleanJsonResponse(bugReviewRaw);
   const styleReview = cleanJsonResponse(styleReviewRaw);
   const testReview = cleanJsonResponse(testReviewRaw);
   const documentationReview = cleanJsonResponse(documentationReviewRaw);
+  const securityReview = cleanJsonResponse(securityReviewRaw);
 
   const review = reviewSynthesizer(
     bugReview,
     styleReview,
     testReview,
-    documentationReview
+    documentationReview,
+    securityReview
   );
 
   return {

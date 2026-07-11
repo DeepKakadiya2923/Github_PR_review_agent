@@ -34,6 +34,12 @@ app.post("/review", async (req, res) => {
     if(error.message.includes("429") || error.message.includes("RESOURCE_EXHAUSTED")) {
         return res.status(429).json({ error: "Gemini API quota exceeded. Please try again later.", });
     }
+    
+
+    if (error.message?.includes("503") || error.message?.includes("UNAVAILABLE")) {
+      return res.status(503).json({error: "Gemini service is busy. Please try again later.",});
+    }
+    
     res.status(500).json({
         error: error.message,
     });

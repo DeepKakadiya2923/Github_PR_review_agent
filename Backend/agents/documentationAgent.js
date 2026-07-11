@@ -42,17 +42,11 @@ export async function documentationAgent(diffText) {
         ${diffText}
         `;
 
-  const response =
-    await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
+    const response =
+        await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        });
 
-  try {
-    return JSON.parse(response.text);
-  } catch {
-    return {
-      documentationIssues: [],
-    };
-  }
+    return response.text.trim();
 }

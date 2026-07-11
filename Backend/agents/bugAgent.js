@@ -68,10 +68,11 @@ export async function bugAgent(diffText) {
         Do not add any explanation before or after the JSON.
         `;
 
-    const response = await ai.models.generateContent({
+    const response =
+        await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
-    });
+        });
 
     return response.text.trim();
 }

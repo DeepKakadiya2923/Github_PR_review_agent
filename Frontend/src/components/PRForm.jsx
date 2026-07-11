@@ -88,6 +88,18 @@ function PRForm() {
                   )
                   .join("\n")
           }
+
+          ### Security Issues
+          ${
+            review.securityIssues.length === 0
+              ? "No security issues found."
+              : review.securityIssues
+                  .map(
+                    (s) =>
+                      `- ${s.title}: ${s.description}`
+                  )
+                  .join("\n")
+          }
           `;
 
     const response = await fetch(
@@ -299,6 +311,38 @@ function PRForm() {
                     <p>
                       <strong>Priority:</strong>{" "}
                       {doc.priority}
+                    </p>
+                  </div>
+                )
+              )
+            )}
+          </div>
+
+          <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-6 shadow">
+            <h2 className="text-xl font-bold mb-4">
+              Security Issues (
+              {review.securityIssues?.length || 0}
+              )
+            </h2>
+
+            {review.securityIssues?.length === 0 ? (
+              <p>No security issues found.</p>
+            ) : (
+              review.securityIssues.map(
+                (issue, index) => (
+                  <div
+                    key={index}
+                    className="mb-4"
+                  >
+                    <h4 className="font-bold">
+                      {issue.title}
+                    </h4>
+
+                    <p>{issue.description}</p>
+
+                    <p>
+                      <strong>Severity:</strong>{" "}
+                      {issue.severity}
                     </p>
                   </div>
                 )

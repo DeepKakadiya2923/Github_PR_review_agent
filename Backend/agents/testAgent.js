@@ -46,10 +46,12 @@ export async function testAgent(diffText) {
         Do not wrap the response in markdown code blocks.
         `;
 
-    const response = await ai.models.generateContent({
+    const response =
+        await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
-    });
+        });
 
     return response.text.trim();
+    
 }
