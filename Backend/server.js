@@ -1,9 +1,13 @@
 import express from "express";
 import cors from "cors";
 
+import { connectDB }from "./config/db.js";
 import { postComment } from "./commentService.js";
 import { parsePRUrl } from "./utils/parsePRUrl.js";
 import { reviewPR } from "./reviewPRService.js";
+import Review from "./models/Review.js";
+
+await connectDB();
 
 const app = express();
 
@@ -39,7 +43,7 @@ app.post("/review", async (req, res) => {
     if (error.message?.includes("503") || error.message?.includes("UNAVAILABLE")) {
       return res.status(503).json({error: "Gemini service is busy. Please try again later.",});
     }
-    
+
     res.status(500).json({
         error: error.message,
     });
@@ -71,6 +75,23 @@ app.post("/comment", async (req, res) => {
   } catch (error) {
     console.error(error);
 
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.get("/history", async (req, res) => {
+  try {
+    const reviews =
+      await Review.find()
+        .sort({
+          createdAt: -1,
+        })
+        .limit(20);
+
+    res.json(reviews);
+  } catch (error) {
     res.status(500).json({
       error: error.message,
     });

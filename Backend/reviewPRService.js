@@ -7,6 +7,7 @@ import { testAgent } from "./agents/testAgent.js";
 import { documentationAgent } from "./agents/documentationAgent.js";
 import { securityAgent }from "./agents/securityAgent.js";
 import { reviewSynthesizer } from "./agents/reviewSynthesizer.js";
+import Review from "./models/Review.js";
 
 dotenv.config();
 
@@ -85,6 +86,37 @@ export async function reviewPR(owner, repo, pullNumber) {
     documentationReview,
     securityReview
   );
+
+  await Review.create({
+    repository:
+      metadata.repository,
+
+    title: metadata.title,
+    author: metadata.author,
+
+    filesChanged:
+      metadata.filesChanged,
+
+    additions:
+      metadata.additions,
+
+    deletions:
+      metadata.deletions,
+
+    bugs: review.bugs,
+
+    styleIssues:
+      review.styleIssues,
+
+    testSuggestions:
+      review.testSuggestions,
+
+    documentationIssues:
+      review.documentationIssues,
+
+    securityIssues:
+      review.securityIssues,
+  });
 
   return {
     metadata,
